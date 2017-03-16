@@ -1,0 +1,38 @@
+# @file          min_vertex_cover.mod
+# @author      veronika karepnko 20070875
+# @brief        Implementation of minimum vertex problem
+
+param n, integer, >=3;                  # number of nodes
+
+set V := 1..n;                          # set of nodes
+set E, within V cross V;                # set of edges in graph
+
+param c{(i,j) in E}; 
+
+var x{i in V}, binary; 
+
+minimize idk: sum {(i,j) in E} c[i,j]*x[i];
+
+s.t. sumi : sum{i in V} x[i] = 1;
+s.t. sumj : sum{j in V} x[j] = 1;
+
+
+solve;
+
+printf 'idk : %g\n' ,idk;
+
+# graph-viz output 
+printf 'graph {\n' > 'graph.gv';
+
+# edges
+printf{(i,j) in E:i<j} 
+    ' %3d -- %3d \n', i, j >> 'graph.gv';
+printf '}\n' >> 'graph.gv';
+
+# nodes
+printf{i in V} "%g%s; ", i, 
+    if x[i] then '[style="filled",color="red"]' else ''
+    >> 'graph.gv';
+printf "\n">> 'graph.gv';
+
+end;
